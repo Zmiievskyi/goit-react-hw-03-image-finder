@@ -4,7 +4,7 @@ import { Searchbar } from 'components/Searchbar/Searchbar';
 import ImageGallery from 'components/ImageGallery/ImageGallery';
 import Modal from 'react-modal';
 import { BtnLoadMore } from 'components/Button/Button';
-import { fetchApi } from '../Searchbar/fetchApi';
+import { fetchApi, perPage } from '../Searchbar/fetchApi';
 
 Modal.setAppElement('#root');
 const customStyles = {
@@ -27,9 +27,13 @@ export default class App extends Component {
     error: false,
     isLoading: false,
     isValidate: false,
+    isHidden: true,
   };
 
   handleSearch = name => {
+    if (name === this.state.name) {
+      return;
+    }
     this.setState(prevState => {
       if (prevState.name === name) {
         return {
@@ -53,6 +57,9 @@ export default class App extends Component {
       this.setState({ isValidate: false });
       this.handleApi();
     }
+    if (this.state.isValidate !== prevState.isValidate) {
+      this.setState({ isHidden: true });
+    }
   };
 
   componentDidCatch(error, info) {
@@ -61,19 +68,29 @@ export default class App extends Component {
   }
 
   handleApi = () => {
-    this.setState({ isLoading: true });
+    this.setState({ isLoading: true, isHidden: true });
+    
     setTimeout(() => {
       fetchApi(this.state.name, this.state.page)
         .then(r => {
+          if (r.totalHits % r.hits.length >= 1) {
+            this.setState(prevState => {
+              return {
+                images: [...r.hits, ...prevState.images],
+                isHidden: false,
+              };
+            });
+            return;
+          }
           this.setState(prevState => {
             return {
-              images: [...prevState.images, ...r.hits],
+              images: [...r.hits],
             };
           });
         })
         .catch(error => this.setState({ error: true }))
         .finally(this.setState({ isLoading: false }));
-    }, 500);
+    }, 300);
   };
 
   handleSelectImg = url => {
@@ -95,7 +112,8 @@ export default class App extends Component {
   };
 
   render() {
-    const { isValidate, error, images, isLoading, selectedImg } = this.state;
+    const { error, images, isLoading, selectedImg } =
+      this.state;
     return (
       <div style={{ textAlign: 'center' }}>
         <Searchbar
@@ -103,15 +121,8 @@ export default class App extends Component {
           isLoad={isLoading}
           onValidate={this.handleError}
         />
-
-        {isValidate ? (
-          <div>{isValidate}</div>
-        ) : (
-          <ImageGallery imageList={images} onSelect={this.handleSelectImg} />
-        )}
-        {images.length >= 1 && !isValidate && (
-          <BtnLoadMore onClick={this.handleLoadMore} />
-        )}
+        <ImageGallery imageList={images} onSelect={this.handleSelectImg} />
+        {!this.state.isHidden && <BtnLoadMore onClick={this.handleLoadMore} />}
         {isLoading && <div>Loading...</div>}
         {error && <p>please reload page</p>}
         <Modal

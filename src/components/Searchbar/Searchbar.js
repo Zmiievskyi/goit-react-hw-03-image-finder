@@ -17,16 +17,17 @@ const initialValues = {
 };
 
 export const Searchbar = prop => {
-
   const handleSubmit = (values, actions) => {
     prop.onSubmit(values.Search);
     actions.setSubmitting(false);
-    actions.reset()
+    // actions.reset()
   };
 
-  const handleValidate = e => {
-    prop.onValidate(e)
-  };
+  // const handleValidate = e => {
+  //   if (e) {
+  //     prop.onValidate(e);
+  //   }
+  // };
 
   return (
     <FormWrapper>
@@ -36,6 +37,7 @@ export const Searchbar = prop => {
         validationSchema={schema}
       >
         {props => {
+          // console.log(props.isSubmitting);
           return (
             <FormStyled autoComplete="off">
               <ButtonStyled
@@ -45,7 +47,15 @@ export const Searchbar = prop => {
               <InputStyled type="text" name="Search" />
               <ErrorMessage
                 name="Search"
-                render={error => handleValidate(error)}
+                render={error => (
+                  <div
+                    style={{
+                      color: "red", width: 300,
+                    }}
+                  >
+                    {error}
+                  </div>
+                )}
               />
             </FormStyled>
           );
