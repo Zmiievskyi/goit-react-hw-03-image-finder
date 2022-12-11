@@ -4,7 +4,7 @@ import { Searchbar } from 'components/Searchbar/Searchbar';
 import ImageGallery from 'components/ImageGallery/ImageGallery';
 import Modal from 'react-modal';
 import { BtnLoadMore } from 'components/Button/Button';
-import { fetchApi, perPage } from '../Searchbar/fetchApi';
+import { fetchApi } from '../Searchbar/fetchApi';
 
 Modal.setAppElement('#root');
 const customStyles = {
