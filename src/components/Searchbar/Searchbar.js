@@ -50,7 +50,8 @@ export const Searchbar = prop => {
                 render={error => (
                   <div
                     style={{
-                      color: "red", width: 300,
+                      color: 'red',
+                      width: 300,
                     }}
                   >
                     {error}

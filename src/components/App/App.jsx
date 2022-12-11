@@ -69,7 +69,7 @@ export default class App extends Component {
 
   handleApi = () => {
     this.setState({ isLoading: true, isHidden: true });
-    
+
     setTimeout(() => {
       fetchApi(this.state.name, this.state.page)
         .then(r => {
@@ -112,8 +112,7 @@ export default class App extends Component {
   };
 
   render() {
-    const { error, images, isLoading, selectedImg } =
-      this.state;
+    const { error, images, isLoading, selectedImg } = this.state;
     return (
       <div style={{ textAlign: 'center' }}>
         <Searchbar
