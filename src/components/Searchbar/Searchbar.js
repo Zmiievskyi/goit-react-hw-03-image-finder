@@ -6,21 +6,26 @@ import {
   FormWrapper,
   InputStyled,
   ButtonStyled,
-  SpanStyled,
 } from '../Searchbar/Searchbar.styled';
 
 let schema = yup.object().shape({
-  searchQuery: yup.string().min(4).max(12),
+  Search: yup.string().min(3).max(12),
 });
 
 const initialValues = {
-  searchQuery: '',
+  Search: '',
 };
 
-export const Searchbar = (props) => {
-  const handleSubmit = (values) => {
-    props.onSubmit(values.searchQuery);
+export const Searchbar = prop => {
+  const handleSubmit = (values, actions) => {
+    prop.onSubmit(values.Search);
+    actions.setSubmitting(false);
   };
+
+  const handleValidate = e => {
+    prop.onValidate(e)
+  };
+
   return (
     <FormWrapper>
       <Formik
@@ -31,12 +36,15 @@ export const Searchbar = (props) => {
         {props => {
           return (
             <FormStyled autoComplete="off">
-              <ButtonStyled type="submit" className="button">
-                <SpanStyled className="button-label">Search</SpanStyled>
-              </ButtonStyled>
-
-              <InputStyled type="text" name="searchQuery" />
-              <ErrorMessage name="searchQuery" />
+              <ButtonStyled
+                type="submit"
+                disabled={props.isSubmitting}
+              ></ButtonStyled>
+              <InputStyled type="text" name="Search" />
+              <ErrorMessage
+                name="Search"
+                render={error => handleValidate(error)}
+              />
             </FormStyled>
           );
         }}

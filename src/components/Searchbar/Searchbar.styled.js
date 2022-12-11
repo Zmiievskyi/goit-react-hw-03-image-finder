@@ -33,6 +33,7 @@ export const FormStyled = styled(Form)`
 export const InputStyled = styled(Field)`
   display: inline-block;
   width: 100%;
+  height: 100%;
   font: inherit;
   font-size: 20px;
   border: none;
@@ -70,7 +71,7 @@ export const ButtonStyled = styled.button`
 */
 
 export const SpanStyled = styled.span`
- position: absolute;
+ /* position: absolute;
   width: 1px;
   height: 1px;
   padding: 0;
@@ -78,5 +79,6 @@ export const SpanStyled = styled.span`
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   clip-path: inset(50%);
-  border: 0;
+  border: 0; */
+  font-size: 8px;
 `;

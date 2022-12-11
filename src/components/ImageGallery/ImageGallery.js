@@ -20,6 +20,7 @@ export default class ImageGallery extends Component {
             />
           </LiStyled>
         ))}
+        
       </UlStyled>
     );
   }

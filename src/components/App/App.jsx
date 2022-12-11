@@ -20,10 +20,13 @@ const customStyles = {
 
 export default class App extends Component {
   state = {
-    images: null,
+    images: [],
     name: '',
     selectedImg: null,
     page: 1,
+    error: false,
+    isLoading: false,
+    isValidate: false,
   };
 
   handleSearch = name => {
@@ -34,6 +37,7 @@ export default class App extends Component {
         };
       } else {
         return {
+          images: [],
           name: name,
           page: 1,
         };
@@ -41,21 +45,35 @@ export default class App extends Component {
     });
   };
 
-  componentDidUpdate = (prevProps, prevState) => {
+  componentDidUpdate = (_, prevState) => {
     if (
       prevState.page !== this.state.page ||
       prevState.name !== this.state.name
     ) {
+      this.setState({ isValidate: false });
       this.handleApi();
     }
   };
 
+  componentDidCatch(error, info) {
+    console.log(error);
+    console.log(info);
+  }
+
   handleApi = () => {
-    fetchApi(this.state.name, this.state.page).then(r => {
-      this.setState({
-        images: r.hits,
-      });
-    });
+    this.setState({ isLoading: true });
+    setTimeout(() => {
+      fetchApi(this.state.name, this.state.page)
+        .then(r => {
+          this.setState(prevState => {
+            return {
+              images: [...prevState.images, ...r.hits],
+            };
+          });
+        })
+        .catch(error => this.setState({ error: true }))
+        .finally(this.setState({ isLoading: false }));
+    }, 3000);
   };
 
   handleSelectImg = url => {
@@ -72,17 +90,28 @@ export default class App extends Component {
     this.setState({ selectedImg: null });
   };
 
+  handleError = e => {
+    this.setState({ isValidate: e });
+  };
+
   render() {
     return (
       <div style={{ textAlign: 'center' }}>
-        <Searchbar onSubmit={this.handleSearch} />
-        {this.state.images !== null && (
-          <ImageGallery
-            imageList={this.state.images}
-            onSelect={this.handleSelectImg}
-          />
+        <Searchbar
+          onSubmit={this.handleSearch}
+          isLoad={this.state.isLoading}
+          onValidate={this.handleError}
+        />
+        <ImageGallery
+          imageList={this.state.images}
+          onSelect={this.handleSelectImg}
+        />
+        {this.state.isValidate && <div>{this.state.isValidate}</div>}
+        {this.state.images >= 1 && (
+          <BtnLoadMore onClick={this.handleLoadMore} />
         )}
-        <BtnLoadMore onClick={this.handleLoadMore} />
+        {this.state.isLoading && <div>Loading...</div>}
+        {this.state.error && <p>please reload page</p>}
         <Modal
           isOpen={this.state.selectedImg !== null}
           style={customStyles}
@@ -95,7 +124,7 @@ export default class App extends Component {
               flexDirection: 'column',
             }}
           >
-            <button onClick={this.closeModal}>close</button>
+            <button onClick={this.closeModal}>x</button>
             <img src={this.state.selectedImg} alt="Selected" width={600} />
           </div>
         </Modal>
