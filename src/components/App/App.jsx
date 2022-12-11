@@ -73,7 +73,7 @@ export default class App extends Component {
         })
         .catch(error => this.setState({ error: true }))
         .finally(this.setState({ isLoading: false }));
-    }, 3000);
+    }, 500);
   };
 
   handleSelectImg = url => {
@@ -95,25 +95,27 @@ export default class App extends Component {
   };
 
   render() {
+    const { isValidate, error, images, isLoading, selectedImg } = this.state;
     return (
       <div style={{ textAlign: 'center' }}>
         <Searchbar
           onSubmit={this.handleSearch}
-          isLoad={this.state.isLoading}
+          isLoad={isLoading}
           onValidate={this.handleError}
         />
-        <ImageGallery
-          imageList={this.state.images}
-          onSelect={this.handleSelectImg}
-        />
-        {this.state.isValidate && <div>{this.state.isValidate}</div>}
-        {this.state.images >= 1 && (
+
+        {isValidate ? (
+          <div>{isValidate}</div>
+        ) : (
+          <ImageGallery imageList={images} onSelect={this.handleSelectImg} />
+        )}
+        {images.length >= 1 && !isValidate && (
           <BtnLoadMore onClick={this.handleLoadMore} />
         )}
-        {this.state.isLoading && <div>Loading...</div>}
-        {this.state.error && <p>please reload page</p>}
+        {isLoading && <div>Loading...</div>}
+        {error && <p>please reload page</p>}
         <Modal
-          isOpen={this.state.selectedImg !== null}
+          isOpen={selectedImg !== null}
           style={customStyles}
           onRequestClose={this.closeModal}
         >
@@ -125,7 +127,7 @@ export default class App extends Component {
             }}
           >
             <button onClick={this.closeModal}>x</button>
-            <img src={this.state.selectedImg} alt="Selected" width={600} />
+            <img src={selectedImg} alt="Selected" width={600} />
           </div>
         </Modal>
         <GlobalStyle />

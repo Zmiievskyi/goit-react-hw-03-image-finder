@@ -17,9 +17,11 @@ const initialValues = {
 };
 
 export const Searchbar = prop => {
+
   const handleSubmit = (values, actions) => {
     prop.onSubmit(values.Search);
     actions.setSubmitting(false);
+    actions.reset()
   };
 
   const handleValidate = e => {
